@@ -1,0 +1,39 @@
+modules = ["nodejs-20"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["ollama-rocm", "run"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Discord Bot"
+
+[[workflows.workflow]]
+name = "Discord Bot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+OPENAI_API_KEY = "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"
