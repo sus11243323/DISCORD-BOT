@@ -280,3 +280,71 @@ setInterval(() => {
     `💓 Heartbeat | WS: ${client.ws.status} | Guilds: ${client.guilds.cache.size}`
   );
 }, 60 * 1000);
+
+/* =====================================================
+   🐧 ADD-ONLY LINUX SERVICE + LOGIN REPAIR (NEW CODE)
+===================================================== */
+const os = require("os");
+
+function linux(icon, name, msg, color = "white") {
+  const t = new Date().toISOString().split("T")[1].split(".")[0];
+  console.log(chalk[color](`[ ${t} ] ${icon} ${name.padEnd(12)} │ ${msg}`));
+}
+
+console.log(chalk.gray("\n────────────────────────────────────────"));
+console.log(chalk.cyan.bold(" discord.service • kornet.lat"));
+console.log(chalk.gray("────────────────────────────────────────\n"));
+
+linux("🖥️", "SYSTEM", `${os.type()} ${os.release()} ${os.arch()}`, "cyan");
+linux("⚙️", "NODE", process.version, "cyan");
+linux("📦", "PID", process.pid.toString(), "cyan");
+
+/* 🔧 Gateway hang repair (Render-safe) */
+setTimeout(() => {
+  if (!client.isReady()) {
+    linux("🚨", "GATEWAY", "Login stalled — forcing restart", "red");
+    process.exit(1);
+  }
+}, 25_000);
+
+/* 📡 Live gateway monitor */
+setInterval(() => {
+  const map = {
+    0: "READY",
+    1: "CONNECTING",
+    2: "RECONNECTING",
+    3: "IDLE",
+    4: "NEARLY",
+    5: "DISCONNECTED"
+  };
+
+  linux(
+    "📡",
+    "GATEWAY",
+    `Status=${map[client.ws.status] ?? "UNKNOWN"} | Ping=${client.ws.ping}ms`,
+    client.isReady() ? "green" : "yellow"
+  );
+}, 30_000);
+
+/* 🔌 Hard Discord diagnostics */
+client.on("invalidated", () => {
+  linux("💀", "DISCORD", "Session invalidated (token revoked)", "red");
+});
+
+client.on("disconnect", () => {
+  linux("🔌", "DISCORD", "Disconnected from gateway", "red");
+});
+
+client.on("reconnecting", () => {
+  linux("🔄", "DISCORD", "Reconnecting…", "yellow");
+});
+
+client.on("rateLimit", info => {
+  linux("⏱️", "RATELIMIT", `${info.method} ${info.path}`, "yellow");
+});
+
+/* 🟢 Extra ready confirmation */
+client.on("ready", () => {
+  linux("✅", "READY", `Online as ${client.user.tag}`, "green");
+  linux("📡", "PING", `${client.ws.ping}ms`, "green");
+});
