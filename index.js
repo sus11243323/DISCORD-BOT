@@ -26,7 +26,7 @@ app.head("/", (req, res) => {
   res.status(200).end();
 });
 
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Uptime server running");
 });
