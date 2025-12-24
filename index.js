@@ -8,6 +8,12 @@ const path = require("path");
 const chalk = require("chalk");
 
 /* =========================
+   🔎 ENV DEBUG (SAFE)
+========================= */
+console.log("🔍 Token present:", Boolean(process.env.DISCORD_BOT_TOKEN));
+console.log("📂 App directory:", __dirname);
+
+/* =========================
    🌐 UPTIME SERVER
 ========================= */
 const app = express();
@@ -30,7 +36,7 @@ app.listen(PORT, () => {
 ========================= */
 setInterval(async () => {
   try {
-    await fetch("https://example.com"); // harmless ping
+    await fetch("https://example.com");
     console.log("🔁 Self-ping OK");
   } catch (err) {
     console.log("⚠️ Self-ping failed (ignored)");
@@ -94,6 +100,23 @@ if (process.env.OPENAI_API_KEY) {
 }
 
 /* =========================
+   📁 FORCE COMMANDS FOLDER
+========================= */
+const forceCommandsPath = path.join(__dirname, "commands");
+
+try {
+  if (!fs.existsSync(forceCommandsPath)) {
+    fs.mkdirSync(forceCommandsPath);
+    fs.writeFileSync(path.join(forceCommandsPath, ".gitkeep"), "");
+    console.log("📁 Commands folder auto-created");
+  } else {
+    console.log("📁 Commands folder exists");
+  }
+} catch (e) {
+  console.log("⚠️ Failed to create commands folder (ignored)");
+}
+
+/* =========================
    📂 LOAD COMMANDS
 ========================= */
 const commandsPath = path.join(__dirname, "commands");
@@ -154,7 +177,6 @@ client.on("messageCreate", async (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    /* 🤖 AI COMMAND */
     if (commandName === "ai") {
       if (!openai) {
         return message.reply("❌ AI is disabled.");
@@ -171,14 +193,8 @@ client.on("messageCreate", async (message) => {
         const response = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
-            {
-              role: "system",
-              content: "Reply in Polish if the user uses Polish, otherwise English."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
+            { role: "system", content: "Reply in Polish if the user uses Polish, otherwise English." },
+            { role: "user", content: prompt }
           ],
           max_tokens: 500
         });
@@ -190,7 +206,6 @@ client.on("messageCreate", async (message) => {
       }
     }
 
-    /* 📦 NORMAL COMMANDS */
     const command = client.commands.get(commandName);
     if (!command) return;
 
@@ -200,6 +215,15 @@ client.on("messageCreate", async (message) => {
     console.error("❌ Message handler error (ignored):", err);
   }
 });
+
+/* =========================
+   🔐 TOKEN VALIDATION
+========================= */
+if (process.env.DISCORD_BOT_TOKEN) {
+  console.log("🔐 DISCORD_BOT_TOKEN length:", process.env.DISCORD_BOT_TOKEN.length);
+} else {
+  console.log("❌ DISCORD_BOT_TOKEN is undefined");
+}
 
 /* =========================
    🔐 LOGIN (SAFE)
