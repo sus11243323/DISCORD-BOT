@@ -159,8 +159,8 @@ client.once("ready", () => {
   console.log(chalk.green.bold(`✅ Online as ${client.user.tag}`));
 
   client.user.setPresence({
-    status: "idle",
-    activities: [{ name: "Moderating GWS <:icondihh:1450244819980128276>", type: 4 }]
+    status: "dnd",
+    activities: [{ name: "Moderating GWS https://cdn.discordapp.com/emojis/1352281293504647218.webp?size=48&name=Verified", type: 4 }]
   });
 });
 
