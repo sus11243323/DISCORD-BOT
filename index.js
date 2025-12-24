@@ -74,14 +74,15 @@ const {
 } = require("discord.js");
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildPresences
-  ],
+intents: [
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.MessageContent,
+  GatewayIntentBits.GuildModeration,
+  // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
+],
+
   partials: [Partials.Channel]
 });
 
