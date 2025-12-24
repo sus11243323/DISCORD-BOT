@@ -160,7 +160,7 @@ client.once("ready", () => {
 
   client.user.setPresence({
     status: "dnd",
-    activities: [{ name: "Moderating servers", type: 0 }]
+    activities: [{ name: "Moderating GWS <:icondihh:1450244819980128276>", type: 5 }]
   });
 });
 
