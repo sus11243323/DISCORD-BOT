@@ -35,7 +35,7 @@ module.exports = {
                 commands: ['slap', 'kiss', 'punch', 'wave', 'dance', 'laugh', 'cry', 'smile', 'frown', 'pet', 'cuddle', 'tickle', 'poke', 'highfive', 'fist', 'handshake', 'hype', 'cheer', 'clap', 'chant', 'birthday', 'celebrate', 'sad', 'happy', 'angry', 'confused', 'bored', 'tired', 'hungry', 'thirsty', 'sleepy', 'cold', 'hot', 'sick', 'amazed', 'shocked', 'scared', 'cool', 'sarcasm', 'shrug', 'facepalm', 'bow', 'respect', 'apologize', 'forgive', 'blame', 'praise', 'compliment', 'insult', 'flirt', 'love', 'hate', 'marry', 'divorce', 'propose', 'adopt', 'care', 'wink', 'sparkle', 'shine', 'glow', 'magic', 'curse', 'steal', 'rob', 'heal', 'kill']
             },
             bot: {
-                emoji: '<:imagesremovebgpreview:1453191040218693743>',
+                emoji: '<:discotoolsxyzicon:1450248642601681059>',
                 name: 'Bot Management (6)',
                 commands: ['changestatus', 'changebotname', 'resetbotname', 'automod', 'trackuser', 'addgame']
             }
@@ -65,7 +65,7 @@ module.exports = {
                 { name: '<:imageremovebgpreview:1450245874360909945> Fun', value: '`!help fun`\n19 commands', inline: true },
                 { name: '<:imagesremovebgpreview:1453191040218693743> Economy', value: '`!help economy`\n6 commands', inline: true },
                 { name: '👥 Actions', value: '`!help actions`\n80 commands', inline: true },
-                { name: '<:imagesremovebgpreview:1453191040218693743> Bot Management', value: '`!help bot`\n6 commands', inline: true }
+                { name: '<:discotoolsxyzicon:1450248642601681059> Bot Management', value: '`!help bot`\n6 commands', inline: true }
             )
             .setFooter({ text: `Total: 180+ commands | Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
             .setTimestamp();
