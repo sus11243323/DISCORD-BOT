@@ -26,7 +26,7 @@ app.head("/", (req, res) => {
   res.status(200).end();
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log("Uptime server running");
 });
@@ -36,7 +36,7 @@ app.listen(PORT, () => {
 ========================= */
 setInterval(async () => {
   try {
-    await fetch("https://example.com");
+    await fetch("https://discord-bot-82pi.onrender.com");
     console.log("🔁 Self-ping OK");
   } catch (err) {
     console.log("⚠️ Self-ping failed (ignored)");
