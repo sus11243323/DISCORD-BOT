@@ -13,6 +13,11 @@ const chalk = require("chalk");
 console.log("🔍 Token present:", Boolean(process.env.DISCORD_BOT_TOKEN));
 console.log("📂 App directory:", __dirname);
 
+// ➕ ADDED: Startup banner
+console.log(chalk.magenta.bold("\n════════════════════════════"));
+console.log(chalk.magenta.bold("🚀 BOT BOOT SEQUENCE START"));
+console.log(chalk.magenta.bold("════════════════════════════\n"));
+
 /* =========================
    🌐 UPTIME SERVER
 ========================= */
@@ -30,6 +35,9 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Render And Uptime Happy 😊");
 });
+
+// ➕ ADDED: Server ready log
+console.log(chalk.green(`🌐 Express listening on ${PORT}`));
 
 /* =========================
    🔁 SAFE SELF PING (NO CRASH)
@@ -78,6 +86,23 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+
+// ➕ ADDED: Discord lifecycle logs
+client.on("debug", d => console.log(chalk.gray("🧪 Discord debug:"), d));
+client.on("warn", w => console.log(chalk.yellow("⚠️ Discord warn:"), w));
+client.on("error", e => console.log(chalk.red("❌ Discord error:"), e));
+
+client.on("shardReady", id => {
+  console.log(chalk.green(`🧩 Shard ${id} ready`));
+});
+
+client.on("shardDisconnect", (_, id) => {
+  console.log(chalk.red(`🔌 Shard ${id} disconnected`));
+});
+
+client.on("shardReconnecting", id => {
+  console.log(chalk.yellow(`🔄 Shard ${id} reconnecting`));
+});
 
 /* =========================
    🧠 OPENAI (SAFE INIT)
@@ -164,6 +189,11 @@ client.once("ready", () => {
   });
 });
 
+// ➕ ADDED: Extra ready confirmation
+client.on("ready", () => {
+  console.log(chalk.green("🎉 Discord session fully established"));
+});
+
 /* =========================
    💬 MESSAGE HANDLER (! PREFIX)
 ========================= */
@@ -225,9 +255,16 @@ if (process.env.DISCORD_BOT_TOKEN) {
   console.log("❌ DISCORD_BOT_TOKEN is undefined");
 }
 
+// ➕ ADDED: Token sanity warning
+if (process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_BOT_TOKEN.length < 50) {
+  console.log("⚠️ Token length looks suspicious");
+}
+
 /* =========================
    🔐 LOGIN (SAFE)
 ========================= */
+console.log("🔐 Preparing Discord login…");
+
 if (!process.env.DISCORD_BOT_TOKEN) {
   console.error("❌ DISCORD_BOT_TOKEN missing — bot not logged in");
 } else {
@@ -236,3 +273,10 @@ if (!process.env.DISCORD_BOT_TOKEN) {
       console.error("❌ Login failed (ignored):", err);
     });
 }
+
+// ➕ ADDED: Heartbeat (Render visibility)
+setInterval(() => {
+  console.log(
+    `💓 Heartbeat | WS: ${client.ws.status} | Guilds: ${client.guilds.cache.size}`
+  );
+}, 60 * 1000);
