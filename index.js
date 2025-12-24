@@ -159,8 +159,8 @@ client.once("ready", () => {
   console.log(chalk.green.bold(`✅ Online as ${client.user.tag}`));
 
   client.user.setPresence({
-    status: "dnd",
-    activities: [{ name: "Moderating GWS <:icondihh:1450244819980128276>", type: 5 }]
+    status: "idle",
+    activities: [{ name: "Moderating GWS <:icondihh:1450244819980128276>", type: 4 }]
   });
 });
 
