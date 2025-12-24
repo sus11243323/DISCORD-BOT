@@ -160,7 +160,7 @@ client.once("ready", () => {
 
   client.user.setPresence({
     status: "dnd",
-    activities: [{ name: "Moderating GWS https://cdn.discordapp.com/emojis/1352281293504647218.webp?size=48&name=Verified", type: 4 }]
+    activities: [{ name: "Moderating GWS ✔️", type: 4 }]
   });
 });
 
