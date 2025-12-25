@@ -1,4 +1,4 @@
- /* =========================
+/* =========================
    🔧 CORE IMPORTS
 ========================= */
 const express = require("express");
@@ -80,7 +80,6 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildModeration,
-    // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
   ],
   partials: [Partials.Channel]
 });
@@ -195,11 +194,21 @@ client.on("ready", () => {
 });
 
 /* =========================
+   🛑 MESSAGE EXECUTION LOCK (ADDED)
+========================= */
+const __MESSAGE_LOCK__ = new Set();
+
+/* =========================
    💬 MESSAGE HANDLER (! PREFIX)
 ========================= */
 client.on("messageCreate", async (message) => {
   try {
     if (message.author.bot) return;
+
+    // 🛑 HARD STOP — prevents duplicate execution
+    if (__MESSAGE_LOCK__.has(message.id)) return;
+    __MESSAGE_LOCK__.add(message.id);
+    setTimeout(() => __MESSAGE_LOCK__.delete(message.id), 10_000);
 
     const prefix = "!";
     if (!message.content.startsWith(prefix)) return;
@@ -261,7 +270,6 @@ if (process.env.DISCORD_BOT_TOKEN) {
   console.log("❌ DISCORD_BOT_TOKEN is undefined");
 }
 
-// ➕ ADDED: Token sanity warning
 if (process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_BOT_TOKEN.length < 50) {
   console.log("⚠️ Token length looks suspicious");
 }
@@ -278,7 +286,9 @@ if (!process.env.DISCORD_BOT_TOKEN) {
     .catch(err => console.error("❌ Login failed (ignored):", err));
 }
 
-// ➕ ADDED: Heartbeat (Render visibility)
+/* =========================
+   💓 HEARTBEAT
+========================= */
 setInterval(() => {
   const date = new Date().toLocaleTimeString();
   console.log(
@@ -287,7 +297,7 @@ setInterval(() => {
 }, 60 * 1000);
 
 /* =====================================================
-   🐧 ADD-ONLY LINUX SERVICE + LOGIN REPAIR (NEW CODE)
+   🐧 ADD-ONLY LINUX SERVICE + LOGIN REPAIR
 ===================================================== */
 
 function linux(icon, name, msg, color = "white") {
@@ -303,7 +313,6 @@ linux("🖥️", "SYSTEM", `${os.type()} ${os.release()} ${os.arch()}`, "cyan");
 linux("⚙️", "NODE", process.version, "cyan");
 linux("📦", "PID", process.pid.toString(), "cyan");
 
-/* 🔧 Gateway hang repair (Render-safe) */
 setTimeout(() => {
   if (!client.isReady()) {
     linux("🚨", "GATEWAY", "Login stalled — forcing restart", "red");
@@ -311,7 +320,6 @@ setTimeout(() => {
   }
 }, 25_000);
 
-/* 📡 Live gateway monitor */
 setInterval(() => {
   const map = {
     0: "READY",
@@ -330,7 +338,6 @@ setInterval(() => {
   );
 }, 30_000);
 
-/* 🔌 Hard Discord diagnostics */
 client.on("invalidated", () => {
   linux("💀", "DISCORD", "Session invalidated (token revoked)", "red");
 });
@@ -347,7 +354,6 @@ client.on("rateLimit", info => {
   linux("⏱️", "RATELIMIT", `${info.method} ${info.path}`, "yellow");
 });
 
-/* 🟢 Extra ready confirmation */
 client.on("ready", () => {
   linux("✅", "READY", `Online as ${client.user.tag}`, "green");
   linux("📡", "PING", `${client.ws.ping}ms`, "green");
@@ -357,7 +363,6 @@ client.on("ready", () => {
    🔔 EXTRA FEATURES
 ========================= */
 
-// Animated startup banner
 const bannerFrames = [
   "🚀 Booting.",
   "🚀 Booting..",
@@ -369,9 +374,8 @@ const bannerInterval = setInterval(() => {
   process.stdout.write(`\r${chalk.magenta(bannerFrames[bannerIndex])}   `);
   bannerIndex = (bannerIndex + 1) % bannerFrames.length;
 }, 400);
-setTimeout(() => clearInterval(bannerInterval), 4000); // stop after 4s
+setTimeout(() => clearInterval(bannerInterval), 4000);
 
-// System stats logger every 10 min
 setInterval(() => {
   const uptime = (process.uptime() / 60).toFixed(1);
   const memUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
