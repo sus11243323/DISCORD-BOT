@@ -31,7 +31,6 @@ client.once("ready", () => {
 });
 
 // 3️⃣ Tiny web server for UptimeRobot
-const app = express();
 
 app.get("/", (req, res) => {
   res.send("OK");
