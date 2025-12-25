@@ -25,20 +25,21 @@ console.log(chalk.magenta.bold("════════════════
 ========================= */
 const app = express();
 
-// 2️⃣ Bot ready event
-client.once("ready", () => {
-  console.log(`Logged in as ${client.user.tag}`);
+app.get("/", (req, res) => {
+  res.status(200).send("OK");
 });
 
-// 3️⃣ Tiny web server for UptimeRobot
+app.head("/", (req, res) => {
+  res.status(200).end();
+});
 
-app.get("/", (req, res) => {
-  res.send("OK");
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log("Render And Uptime Happy 😊");
 });
 
 // Use Railway port or fallback to 8080
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Health check running on port ${PORT}`));
+
 
 
 // ➕ ADDED: Server ready log
