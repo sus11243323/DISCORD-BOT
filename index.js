@@ -1,4 +1,3 @@
-
 /* =========================
    🔧 CORE IMPORTS
 ========================= */
@@ -7,7 +6,6 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-
 
 /* =========================
    🔎 ENV DEBUG (SAFE)
@@ -33,24 +31,19 @@ app.head("/", (req, res) => {
   res.status(200).end();
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Render And Uptime Happy 😊");
+  console.log(chalk.green(`🌐 Express listening on ${PORT}`));
 });
-
-// Use Railway port or fallback to 8080
-
-
-
-// ➕ ADDED: Server ready log
-console.log(chalk.green(`🌐 Express listening on ${PORT}`));
 
 /* =========================
    🔁 SAFE SELF PING (NO CRASH)
 ========================= */
 setInterval(async () => {
   try {
-    await fetch("https://discord-bot-82pi.onrender.com");
+    const projectUrl = `https://${process.env.RAILWAY_STATIC_URL || process.env.HOST || "your-project-name.up.railway.app"}`;
+    await fetch(projectUrl);
     console.log("🔁 Self-ping OK");
   } catch (err) {
     console.log("⚠️ Self-ping failed (ignored)");
@@ -88,7 +81,6 @@ intents: [
   GatewayIntentBits.GuildModeration,
   // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
 ],
-
   partials: [Partials.Channel]
 });
 
@@ -215,25 +207,15 @@ client.on("messageCreate", async (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
+    // --- AI Command ---
     if (commandName === "ai") {
-      if (!openai) {
-        return message.reply("❌ AI is disabled.");
-      }
-       client.on("messageCreate", message => {
-    if (message.content === "!url") {
-        const url = `https://${process.env.RAILWAY_STATIC_URL || "your-project-name.up.railway.app"}`;
-        message.channel.send(`My public URL is: ${url}`);
-    }
-});
+      if (!openai) return message.reply("❌ AI is disabled.");
 
       const prompt = args.join(" ");
-      if (!prompt) {
-        return message.reply("❌ Write something after `!ai`");
-      }
+      if (!prompt) return message.reply("❌ Write something after `!ai`");
 
       try {
         await message.channel.sendTyping();
-
         const response = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
@@ -242,11 +224,21 @@ client.on("messageCreate", async (message) => {
           ],
           max_tokens: 500
         });
-
         return message.reply(response.choices[0].message.content);
       } catch (err) {
         console.error("❌ AI error (ignored):", err);
         return message.reply("❌ AI error.");
+      }
+    }
+
+    // --- URL Command ---
+    if (commandName === "url") {
+      try {
+        const url = process.env.RAILWAY_STATIC_URL || process.env.HOST || "URL not found";
+        return message.reply(`🌐 My public URL is: ${url}`);
+      } catch (err) {
+        console.error("❌ URL command error (ignored):", err);
+        return message.reply("❌ Could not fetch the URL!");
       }
     }
 
@@ -283,9 +275,7 @@ if (!process.env.DISCORD_BOT_TOKEN) {
   console.error("❌ DISCORD_BOT_TOKEN missing — bot not logged in");
 } else {
   client.login(process.env.DISCORD_BOT_TOKEN)
-    .catch(err => {
-      console.error("❌ Login failed (ignored):", err);
-    });
+    .catch(err => console.error("❌ Login failed (ignored):", err));
 }
 
 // ➕ ADDED: Heartbeat (Render visibility)
