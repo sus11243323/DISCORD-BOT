@@ -7,7 +7,6 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const express = require("express");
 const app = express();
 
 // Simple health check for UptimeRobot
