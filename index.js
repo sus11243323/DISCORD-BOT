@@ -1,4 +1,4 @@
-/* =========================
+ADD THE NEW STUFF TO THIS WITHOUT DELETING NAY LINE OF CODE /* =========================
    🔧 CORE IMPORTS
 ========================= */
 const express = require("express");
@@ -14,41 +14,10 @@ const os = require("os");
 console.log("🔍 Token present:", Boolean(process.env.DISCORD_BOT_TOKEN));
 console.log("📂 App directory:", __dirname);
 
-// ➕ ADDED: Startup banner with ASCII and slow 15s cinematic loading
-const asciiArt = `
-                     ##################                     
-                %###********************###%%%              
-             ###***********#####***++=======+*%             
-         @%%######**++=-::--=++****++++====***#%#          
-    %##*=-:-=+**#****+=:.......  . ..    ...***%###        
-    #:****:............ ....  ...          ...-#**%**##      
-    %.****.  ............          ..++++++++   
-  #+-+++.  ...-----++--....      ...++#+++++  
- #++-+++.  ...++####++++-......    .-++
-`;
-
-const bootInfo = [
-  "Initializing kernel modules...",
-  "Loading system services...",
-  "Connecting to Discord gateway...",
-  `Public URL: ${process.env.HOST || "https://discord-bot-17z4.onrender.com"}`,
-  "Authenticating client...",
-  "Starting uptime server...",
-  "Finalizing startup...",
-  "Boot complete ✅"
-];
-
-(async () => {
-  console.clear();
-  console.log(chalk.cyan(asciiArt));
-
-  for (let i = 0; i < bootInfo.length; i++) {
-    await new Promise(r => setTimeout(r, 1500)); // 1.5 sec per line = ~12s
-    console.log(chalk.green(bootInfo[i]));
-  }
-
-  await new Promise(r => setTimeout(r, 3000)); // final 3s pause for total ~15s
-})();
+// ➕ ADDED: Startup banner
+console.log(chalk.magenta.bold("\n════════════════════════════"));
+console.log(chalk.magenta.bold("🚀 BOT BOOT SEQUENCE START"));
+console.log(chalk.magenta.bold("════════════════════════════\n"));
 
 /* =========================
    🌐 UPTIME SERVER
@@ -138,6 +107,8 @@ client.on("shardReconnecting", id => {
 /* =========================
    🧠 OPENAI (SAFE INIT)
 ========================= */
+const { OpenAI } = require("openai");
+
 let openai = null;
 
 if (process.env.OPENAI_API_KEY) {
@@ -318,6 +289,7 @@ setInterval(() => {
 /* =====================================================
    🐧 ADD-ONLY LINUX SERVICE + LOGIN REPAIR (NEW CODE)
 ===================================================== */
+
 function linux(icon, name, msg, color = "white") {
   const t = new Date().toISOString().split("T")[1].split(".")[0];
   console.log(chalk[color](`[ ${t} ] ${icon} ${name.padEnd(12)} │ ${msg}`));
@@ -384,6 +356,21 @@ client.on("ready", () => {
 /* =========================
    🔔 EXTRA FEATURES
 ========================= */
+
+// Animated startup banner
+const bannerFrames = [
+  "🚀 Booting.",
+  "🚀 Booting..",
+  "🚀 Booting...",
+  "🚀 Booting....",
+];
+let bannerIndex = 0;
+const bannerInterval = setInterval(() => {
+  process.stdout.write(`\r${chalk.magenta(bannerFrames[bannerIndex])}   `);
+  bannerIndex = (bannerIndex + 1) % bannerFrames.length;
+}, 400);
+setTimeout(() => clearInterval(bannerInterval), 4000); // stop after 4s
+
 // System stats logger every 10 min
 setInterval(() => {
   const uptime = (process.uptime() / 60).toFixed(1);
