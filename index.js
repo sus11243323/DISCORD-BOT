@@ -9,6 +9,86 @@ const chalk = require("chalk");
 const os = require("os");
 
 /* =========================
+   ⏳ ASCII BOOT & INFO CONSOLE (NEW)
+========================= */
+const asciiArt = [
+  "                     ##################                     ",
+  "                %###********************###%%%              ",
+  "             ###***********#####***++=======+*%             ",
+  "         @%%######**++=-::--=++****++++====***#%#          ",
+  "    %##*=-:-=+**#****+=:.......  . ..    ...***%###        ",
+  "    #:****:......... .....  ...          ...-#**%**##      ",
+  "    %.****.     .....                       .***#%***#     ",
+  "    %.****.    ..............               ..***%#***##   ",
+  "   #%-+***.    . .++***++==-:......         ..=**#%****##  ",
+  "  ###=+**#:    . .#*########**#=..            .#**%%****## ",
+  "  #***=**#:     ..**#########=#+..  ...       .:#**%#****# ",
+  " ##**#-***=..   ..-###%####+:*#+..  ...       ..***#%#***##",
+  "##***%-***+..   ..:#*=++***###*-..            ..-#**%%****##",
+  "##***%-****...  ...*+==-:....    .            ...#***%#****#",
+  "#****%-***#...    .....   ...                 ..:#***%#****#",
+  "#****#-***#-..    ......  ....   ..............=##*#%%#****#",
+  "#****#==**#=.  .  . ....  ..#%%%%###############*%%####****#",
+  "#****#+-***+.  ..-####+.....:#***%%%%%%%%%####%%%######****#",
+  "#****#*:****.  ...#*%%**......-#**#%%#####%%%%#########****#",
+  "##***##:****.  ...:##%%**.......=#***#%%###############****#",
+  "##****%.***#..    .**%%%**...    .+#***#%%############****##",
+  " ##***#:+**#:.    .:#*%%#*=..     ..+#***#%%##########***##",
+  "  #***#=+**#=.    ..=*#%%##-..      ..=#***#%%%######****# ",
+  "  ##****+****.     ..**%#%#*-..       ..+#****#%%###****## ",
+  "   ##**#+***#........=#*%%%*#-.       ....*#****#%%****##  ",
+  "    ##*%###**###*++=--#*##%%*#:....      ...*#*****%#*##   ",
+  "      ##****%%%%##*******%#%#*#:...         .:#******%%    ",
+  "       ##*****###%%%%%%#*#%%%#*#:....:=+*#####*********%%% ",
+  "         ##******######%%%%#%%#**##***********#####%%%%%%%%",
+  "           ##*************##%%%##********###             ",
+  "                ####********************####               ",
+  "                     ##################                      "
+];
+
+const bootInfo = [
+  "Initializing kernel modules...",
+  "Loading system services...",
+  "Connecting to Discord gateway...",
+  `Public URL: ${process.env.HOST || "https://discord-bot-17z4.onrender.com"}`,
+  "Authenticating client...",
+  "Starting uptime server...",
+  "Finalizing startup...",
+  "Boot complete ✅"
+];
+
+function typeLine(line, callback) {
+  let i = 0;
+  const interval = setInterval(() => {
+    process.stdout.write(line[i]);
+    i++;
+    if (i >= line.length) { clearInterval(interval); process.stdout.write("\n"); if (callback) callback(); }
+  }, 5);
+}
+
+function bootSequence(ascii, info) {
+  let a = 0;
+  function nextAscii() {
+    if (a < ascii.length) {
+      console.log(chalk.cyan(ascii[a]));
+      a++;
+      setTimeout(nextAscii, 20);
+    } else nextInfo();
+  }
+  let i = 0;
+  function nextInfo() {
+    if (i < info.length) {
+      typeLine(chalk.green(info[i]), () => { i++; nextInfo(); });
+    } else {
+      linux("✅", "SYSTEM", "Boot sequence complete", "green");
+    }
+  }
+  nextAscii();
+}
+
+bootSequence(asciiArt, bootInfo);
+
+/* =========================
    🔎 ENV DEBUG (SAFE)
 ========================= */
 console.log("🔍 Token present:", Boolean(process.env.DISCORD_BOT_TOKEN));
@@ -80,7 +160,6 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildModeration,
-    // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
   ],
   partials: [Partials.Channel]
 });
@@ -378,3 +457,4 @@ setInterval(() => {
   const cpu = os.loadavg()[0].toFixed(2);
   linux("📊", "STATS", `Uptime: ${uptime}m | CPU Load: ${cpu} | RAM: ${memUsage}MB`, "cyan");
 }, 10 * 60 * 1000);
+s
