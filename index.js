@@ -7,15 +7,6 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-// Simple health check for UptimeRobot
-app.get("/", (req, res) => {
-  res.send("OK");
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Health check running on port ${PORT}`);
-});
 
 
 /* =========================
@@ -34,17 +25,14 @@ console.log(chalk.magenta.bold("════════════════
 ========================= */
 const app = express();
 
+// Simple health check for UptimeRobot
 app.get("/", (req, res) => {
-  res.status(200).send("OK");
-});
-
-app.head("/", (req, res) => {
-  res.status(200).end();
+  res.send("OK");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("Render And Uptime Happy 😊");
+  console.log(`Health check running on port ${PORT}`);
 });
 
 // ➕ ADDED: Server ready log
