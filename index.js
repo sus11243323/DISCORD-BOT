@@ -25,15 +25,16 @@ console.log(chalk.magenta.bold("════════════════
 ========================= */
 const app = express();
 
-// Simple health check for UptimeRobot
 app.get("/", (req, res) => {
-  res.send("OK");
+  res.send("OK"); // This is what UptimeRobot sees
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Health check running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`Health check running on port ${PORT}`));
+
+// Login Discord bot
+client.login(process.env.TOKEN);
+
 
 // ➕ ADDED: Server ready log
 console.log(chalk.green(`🌐 Express listening on ${PORT}`));
