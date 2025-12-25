@@ -31,9 +31,9 @@ app.head("/", (req, res) => {
   res.status(200).end();
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log("Render And Uptime Happy 😊");
+  console.log("Railway And Uptime Happy 😊");
   console.log(chalk.green(`🌐 Express listening on ${PORT}`));
 });
 
