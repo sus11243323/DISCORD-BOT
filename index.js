@@ -7,6 +7,12 @@ const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
 const os = require("os");
+if (global.__DISCORD_BOT_RUNNING__) {
+  console.log("⚠️ Duplicate bot instance detected — stopping this process");
+  process.exit(0);
+}
+global.__KORNET_BOT_RUNNING__ = true;
+
 
 /* =========================
    🔎 ENV DEBUG (SAFE)
