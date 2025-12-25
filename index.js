@@ -6,6 +6,7 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
+const os = require("os");
 
 /* =========================
    🔎 ENV DEBUG (SAFE)
@@ -33,7 +34,7 @@ app.head("/", (req, res) => {
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log("Railway And Uptime Happy 😊");
+  console.log("Render And Uptime Happy 😊");
   console.log(chalk.green(`🌐 Express listening on ${PORT}`));
 });
 
@@ -42,7 +43,7 @@ app.listen(PORT, () => {
 ========================= */
 setInterval(async () => {
   try {
-    const projectUrl = `https://${process.env.RAILWAY_STATIC_URL || process.env.HOST || "your-project-name.up.railway.app"}`;
+    const projectUrl = `https://${process.env.HOST || "your-project-name.onrender.com"}`;
     await fetch(projectUrl);
     console.log("🔁 Self-ping OK");
   } catch (err) {
@@ -73,14 +74,14 @@ const {
 } = require("discord.js");
 
 const client = new Client({
-intents: [
-  GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMessages,
-  GatewayIntentBits.GuildMembers,
-  GatewayIntentBits.MessageContent,
-  GatewayIntentBits.GuildModeration,
-  // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
-],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildModeration,
+    // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
+  ],
   partials: [Partials.Channel]
 });
 
@@ -196,7 +197,6 @@ client.on("ready", () => {
 /* =========================
    💬 MESSAGE HANDLER (! PREFIX)
 ========================= */
-
 client.on("messageCreate", async (message) => {
   try {
     if (message.author.bot) return;
@@ -234,7 +234,7 @@ client.on("messageCreate", async (message) => {
     // --- URL Command ---
     if (commandName === "url") {
       try {
-        const url = process.env.RAILWAY_STATIC_URL || process.env.HOST || "URL not found";
+        const url = process.env.HOST || "URL not found";
         return message.reply(`🌐 My public URL is: ${url}`);
       } catch (err) {
         console.error("❌ URL command error (ignored):", err);
@@ -280,15 +280,15 @@ if (!process.env.DISCORD_BOT_TOKEN) {
 
 // ➕ ADDED: Heartbeat (Render visibility)
 setInterval(() => {
+  const date = new Date().toLocaleTimeString();
   console.log(
-    `💓 Heartbeat | WS: ${client.ws.status} | Guilds: ${client.guilds.cache.size}`
+    chalk.magenta(`[${date}] 💓 Heartbeat | WS: ${client.ws.status} | Guilds: ${client.guilds.cache.size}`)
   );
 }, 60 * 1000);
 
 /* =====================================================
    🐧 ADD-ONLY LINUX SERVICE + LOGIN REPAIR (NEW CODE)
 ===================================================== */
-const os = require("os");
 
 function linux(icon, name, msg, color = "white") {
   const t = new Date().toISOString().split("T")[1].split(".")[0];
@@ -352,3 +352,29 @@ client.on("ready", () => {
   linux("✅", "READY", `Online as ${client.user.tag}`, "green");
   linux("📡", "PING", `${client.ws.ping}ms`, "green");
 });
+
+/* =========================
+   🔔 EXTRA FEATURES
+========================= */
+
+// Animated startup banner
+const bannerFrames = [
+  "🚀 Booting.",
+  "🚀 Booting..",
+  "🚀 Booting...",
+  "🚀 Booting....",
+];
+let bannerIndex = 0;
+const bannerInterval = setInterval(() => {
+  process.stdout.write(`\r${chalk.magenta(bannerFrames[bannerIndex])}   `);
+  bannerIndex = (bannerIndex + 1) % bannerFrames.length;
+}, 400);
+setTimeout(() => clearInterval(bannerInterval), 4000); // stop after 4s
+
+// System stats logger every 10 min
+setInterval(() => {
+  const uptime = (process.uptime() / 60).toFixed(1);
+  const memUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
+  const cpu = os.loadavg()[0].toFixed(2);
+  linux("📊", "STATS", `Uptime: ${uptime}m | CPU Load: ${cpu} | RAM: ${memUsage}MB`, "cyan");
+}, 10 * 60 * 1000);
