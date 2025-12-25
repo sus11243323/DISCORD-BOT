@@ -204,6 +204,7 @@ client.on("ready", () => {
 /* =========================
    💬 MESSAGE HANDLER (! PREFIX)
 ========================= */
+
 client.on("messageCreate", async (message) => {
   try {
     if (message.author.bot) return;
@@ -218,6 +219,12 @@ client.on("messageCreate", async (message) => {
       if (!openai) {
         return message.reply("❌ AI is disabled.");
       }
+       client.on("messageCreate", message => {
+    if (message.content === "!url") {
+        const url = `https://${process.env.RAILWAY_STATIC_URL || "your-project-name.up.railway.app"}`;
+        message.channel.send(`My public URL is: ${url}`);
+    }
+});
 
       const prompt = args.join(" ");
       if (!prompt) {
