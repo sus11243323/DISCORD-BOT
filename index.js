@@ -9,42 +9,23 @@ const chalk = require("chalk");
 const os = require("os");
 
 /* =========================
-   ⏳ ASCII BOOT & INFO CONSOLE (NEW)
+   🔎 ENV DEBUG (SAFE)
 ========================= */
-const asciiArt = [
-  "                     ##################                     ",
-  "                %###********************###%%%              ",
-  "             ###***********#####***++=======+*%             ",
-  "         @%%######**++=-::--=++****++++====***#%#          ",
-  "    %##*=-:-=+**#****+=:.......  . ..    ...***%###        ",
-  "    #:****:......... .....  ...          ...-#**%**##      ",
-  "    %.****.     .....                       .***#%***#     ",
-  "    %.****.    ..............               ..***%#***##   ",
-  "   #%-+***.    . .++***++==-:......         ..=**#%****##  ",
-  "  ###=+**#:    . .#*########**#=..            .#**%%****## ",
-  "  #***=**#:     ..**#########=#+..  ...       .:#**%#****# ",
-  " ##**#-***=..   ..-###%####+:*#+..  ...       ..***#%#***##",
-  "##***%-***+..   ..:#*=++***###*-..            ..-#**%%****##",
-  "##***%-****...  ...*+==-:....    .            ...#***%#****#",
-  "#****%-***#...    .....   ...                 ..:#***%#****#",
-  "#****#-***#-..    ......  ....   ..............=##*#%%#****#",
-  "#****#==**#=.  .  . ....  ..#%%%%###############*%%####****#",
-  "#****#+-***+.  ..-####+.....:#***%%%%%%%%%####%%%######****#",
-  "#****#*:****.  ...#*%%**......-#**#%%#####%%%%#########****#",
-  "##***##:****.  ...:##%%**.......=#***#%%###############****#",
-  "##****%.***#..    .**%%%**...    .+#***#%%############****##",
-  " ##***#:+**#:.    .:#*%%#*=..     ..+#***#%%##########***##",
-  "  #***#=+**#=.    ..=*#%%##-..      ..=#***#%%%######****# ",
-  "  ##****+****.     ..**%#%#*-..       ..+#****#%%###****## ",
-  "   ##**#+***#........=#*%%%*#-.       ....*#****#%%****##  ",
-  "    ##*%###**###*++=--#*##%%*#:....      ...*#*****%#*##   ",
-  "      ##****%%%%##*******%#%#*#:...         .:#******%%    ",
-  "       ##*****###%%%%%%#*#%%%#*#:....:=+*#####*********%%% ",
-  "         ##******######%%%%#%%#**##***********#####%%%%%%%%",
-  "           ##*************##%%%##********###             ",
-  "                ####********************####               ",
-  "                     ##################                      "
-];
+console.log("🔍 Token present:", Boolean(process.env.DISCORD_BOT_TOKEN));
+console.log("📂 App directory:", __dirname);
+
+// ➕ ADDED: Startup banner with ASCII and slow 15s cinematic loading
+const asciiArt = `
+                     ##################                     
+                %###********************###%%%              
+             ###***********#####***++=======+*%             
+         @%%######**++=-::--=++****++++====***#%#          
+    %##*=-:-=+**#****+=:.......  . ..    ...***%###        
+    #:****:............ ....  ...          ...-#**%**##      
+    %.****.  ............          ..++++++++   
+  #+-+++.  ...-----++--....      ...++#+++++  
+ #++-+++.  ...++####++++-......    .-++
+`;
 
 const bootInfo = [
   "Initializing kernel modules...",
@@ -57,47 +38,17 @@ const bootInfo = [
   "Boot complete ✅"
 ];
 
-function typeLine(line, callback) {
-  let i = 0;
-  const interval = setInterval(() => {
-    process.stdout.write(line[i]);
-    i++;
-    if (i >= line.length) { clearInterval(interval); process.stdout.write("\n"); if (callback) callback(); }
-  }, 5);
-}
+(async () => {
+  console.clear();
+  console.log(chalk.cyan(asciiArt));
 
-function bootSequence(ascii, info) {
-  let a = 0;
-  function nextAscii() {
-    if (a < ascii.length) {
-      console.log(chalk.cyan(ascii[a]));
-      a++;
-      setTimeout(nextAscii, 20);
-    } else nextInfo();
+  for (let i = 0; i < bootInfo.length; i++) {
+    await new Promise(r => setTimeout(r, 1500)); // 1.5 sec per line = ~12s
+    console.log(chalk.green(bootInfo[i]));
   }
-  let i = 0;
-  function nextInfo() {
-    if (i < info.length) {
-      typeLine(chalk.green(info[i]), () => { i++; nextInfo(); });
-    } else {
-      linux("✅", "SYSTEM", "Boot sequence complete", "green");
-    }
-  }
-  nextAscii();
-}
 
-bootSequence(asciiArt, bootInfo);
-
-/* =========================
-   🔎 ENV DEBUG (SAFE)
-========================= */
-console.log("🔍 Token present:", Boolean(process.env.DISCORD_BOT_TOKEN));
-console.log("📂 App directory:", __dirname);
-
-// ➕ ADDED: Startup banner
-console.log(chalk.magenta.bold("\n════════════════════════════"));
-console.log(chalk.magenta.bold("🚀 BOT BOOT SEQUENCE START"));
-console.log(chalk.magenta.bold("════════════════════════════\n"));
+  await new Promise(r => setTimeout(r, 3000)); // final 3s pause for total ~15s
+})();
 
 /* =========================
    🌐 UPTIME SERVER
@@ -160,6 +111,7 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildModeration,
+    // GatewayIntentBits.GuildPresences ❌ COMMENT THIS
   ],
   partials: [Partials.Channel]
 });
@@ -186,8 +138,6 @@ client.on("shardReconnecting", id => {
 /* =========================
    🧠 OPENAI (SAFE INIT)
 ========================= */
-const { OpenAI } = require("openai");
-
 let openai = null;
 
 if (process.env.OPENAI_API_KEY) {
@@ -368,7 +318,6 @@ setInterval(() => {
 /* =====================================================
    🐧 ADD-ONLY LINUX SERVICE + LOGIN REPAIR (NEW CODE)
 ===================================================== */
-
 function linux(icon, name, msg, color = "white") {
   const t = new Date().toISOString().split("T")[1].split(".")[0];
   console.log(chalk[color](`[ ${t} ] ${icon} ${name.padEnd(12)} │ ${msg}`));
@@ -435,21 +384,6 @@ client.on("ready", () => {
 /* =========================
    🔔 EXTRA FEATURES
 ========================= */
-
-// Animated startup banner
-const bannerFrames = [
-  "🚀 Booting.",
-  "🚀 Booting..",
-  "🚀 Booting...",
-  "🚀 Booting....",
-];
-let bannerIndex = 0;
-const bannerInterval = setInterval(() => {
-  process.stdout.write(`\r${chalk.magenta(bannerFrames[bannerIndex])}   `);
-  bannerIndex = (bannerIndex + 1) % bannerFrames.length;
-}, 400);
-setTimeout(() => clearInterval(bannerInterval), 4000); // stop after 4s
-
 // System stats logger every 10 min
 setInterval(() => {
   const uptime = (process.uptime() / 60).toFixed(1);
@@ -457,4 +391,3 @@ setInterval(() => {
   const cpu = os.loadavg()[0].toFixed(2);
   linux("📊", "STATS", `Uptime: ${uptime}m | CPU Load: ${cpu} | RAM: ${memUsage}MB`, "cyan");
 }, 10 * 60 * 1000);
-s
