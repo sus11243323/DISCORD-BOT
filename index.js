@@ -25,15 +25,21 @@ console.log(chalk.magenta.bold("════════════════
 ========================= */
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("OK"); // This is what UptimeRobot sees
+// 2️⃣ Bot ready event
+client.once("ready", () => {
+  console.log(`Logged in as ${client.user.tag}`);
 });
 
+// 3️⃣ Tiny web server for UptimeRobot
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("OK");
+});
+
+// Use Railway port or fallback to 8080
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Health check running on port ${PORT}`));
-
-// Login Discord bot
-client.login(process.env.TOKEN);
 
 
 // ➕ ADDED: Server ready log
